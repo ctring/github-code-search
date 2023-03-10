@@ -15,12 +15,19 @@ parser.add_argument("-o", default="results.csv")
 
 args = parser.parse_args()
 
+def get_header(token):
+    return {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.v3+json",
+        'X-GitHub-Api-Version': '2022-11-28',
+    }
+
 # Function to search for a string in a repository
 def search_repo(name, token):
     api_url = f"https://api.github.com/search/code?q=repo:{name}+{args.keyword}"
     response = requests.get(
         api_url,
-        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
+        headers=get_header(token),
     )
     if response.status_code == 422:
         return False
@@ -34,7 +41,7 @@ def check_rate(token):
     api_url = f"https://api.github.com/rate_limit"
     response = requests.get(
         api_url,
-        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
+        headers=get_header(token),
     )
     if response.status_code != 200:
         response.raise_for_status()
@@ -43,7 +50,7 @@ def check_rate(token):
 
 
 def main(token):
-    COLUMNS = ["name", "url", "created_at", "updated_at", "stars"]
+    COLUMNS = ["url", "created_at", "updated_at", "stars"]
 
     orig = pd.read_csv(args.filename, index_col="name")
 

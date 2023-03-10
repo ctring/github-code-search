@@ -10,7 +10,11 @@ args = parser.parse_args()
 df = pd.read_csv(args.filename)
 
 # Drop duplicates
-df = df.drop_duplicates().sort_values(by='stars', ascending=False)
+df = df.drop_duplicates(
+    subset=["name"]
+).sort_values(
+    by='name', ascending=True, key=lambda k: k.str.lower()
+)
 
 # Write the de-duplicated DataFrame to a new CSV file
 if args.o is not None:
